@@ -36,10 +36,9 @@ func main() {
 	var AllowedHeaders = handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	var AllowedMethods = handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS", "PATCH", "DELETE"})
 	var AllowedOrigins = handlers.AllowedOrigins([]string{"*"})
-	var DB_PORT = os.Getenv("DB_PORT")
-	//var port = "5000"
-	fmt.Println("server running:" + DB_PORT)
+	var port = os.Getenv("DB_PORT")
+	fmt.Println("server running:" + port)
 
 	// Embed the setup allowed in 2 parameter on this below code ...
-	http.ListenAndServe(":"+DB_PORT, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
+	http.ListenAndServe(":"+port, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
 }
