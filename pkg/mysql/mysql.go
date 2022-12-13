@@ -1,8 +1,8 @@
 package mysql
 
 import (
+  "os"
 	"fmt"
-	"os"
 	//"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -13,8 +13,8 @@ var DB *gorm.DB
 // Connection Database
 func DatabaseInit() {
 	var err error
-	//dsn := "root:@tcp(127.0.0.1:3306)/holyways?charset=utf8mb4&parseTime=True&loc=Local"
-	//DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	// dsn := "root:@tcp(127.0.0.1:3306)/holyways?charset=utf8mb4&parseTime=True&loc=Local"
+	// DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	var DB_HOST = os.Getenv("DB_HOST")
 	var DB_USER = os.Getenv("DB_USER")

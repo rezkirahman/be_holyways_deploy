@@ -15,7 +15,8 @@ import (
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
-	"github.com/go-playground/validator/v10"
+
+	//"github.com/go-playground/validator/v10"
 	//"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/mux"
 )
@@ -66,6 +67,8 @@ func (h *handlerCharity) GetCharityByUser(w http.ResponseWriter, r *http.Request
 	w.Header().Set("Content-Type", "application/json")
 
 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+	// 	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
+	// userId := int(userInfo["user_id"].(float64))
 
 	var charity []models.Charity
 	charity, err := h.CharityRepository.GetCharityByUser(id)
@@ -89,24 +92,14 @@ func (h *handlerCharity) CreateCharity(w http.ResponseWriter, r *http.Request) {
 	dataContex := r.Context().Value("dataFile")
 	filename := dataContex.(string)
 
-	goal, _ := strconv.Atoi(r.FormValue("goal"))
-	userid, _ := strconv.Atoi(r.FormValue("user_id"))
 
-	request := charitydto.CreateCharityRequest{
-		Title:       r.FormValue("title"),
-		Description: r.FormValue("description"),
-		Goal:        goal,
-		UserID:      userid,
-	}
 
-	validation := validator.New()
-	err := validation.Struct(request)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
+	// request := charitydto.CreateCharityRequest{
+	// 	Title:       ,
+	// 	Description: ,
+	// 	Goal:        goal,
+	// 	UserID:      userId,
+	// }
 
 	var ctx = context.Background()
 	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
@@ -123,34 +116,29 @@ func (h *handlerCharity) CreateCharity(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err.Error())
 	}
 
-	status := "Running"
+	goal, _ := strconv.Atoi(r.FormValue("goal"))
+	userID, _ := strconv.Atoi(r.FormValue("user_id"))
 
 	charity := models.Charity{
-		Title:       request.Title,
+		Title:       r.FormValue("title"),
 		Image:       resp.SecureURL,
-		Goal:        request.Goal,
-		Description: request.Description,
-		Status:      status,
-		UserID:      userid,
+		Goal:        goal,
+		Description: r.FormValue("description"),
+		Status:      "Running",
+		UserID:      userID,
+		Donation:    0,
 	}
 
 	charity, err = h.CharityRepository.CreateCharity(charity)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: "error"}
-		//err.Error()}
+
+	if err !=nil{
+		w. WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
 
-	charity, err = h.CharityRepository.GetCharity(charity.ID)
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: "error"}
-
-		json.NewEncoder(w).Encode(response)
-	}
+	charity, _ = h.CharityRepository.GetCharity(charity.ID)
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: charity}

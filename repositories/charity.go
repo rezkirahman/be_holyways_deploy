@@ -26,7 +26,7 @@ func (r *repository) FindCharities() ([]models.Charity, error) {
 }
 
 func (r *repository) CreateCharity(charity models.Charity) (models.Charity, error) {
-	err := r.db.Create(&charity).Error
+	err := r.db.Debug().Create(&charity).Error
 	return charity, err
 }
 
@@ -38,17 +38,17 @@ func (r *repository) GetCharity(ID int) (models.Charity, error) {
 
 func (r *repository) GetCharityByUser(ID int) ([]models.Charity, error) {
 	var userCharity []models.Charity
-	err := r.db.Find(&userCharity).Where("user_id=?", ID).Error
+	err := r.db.Debug().Where("user_id=?", ID).Preload("User").Find(&userCharity).Error
 	return userCharity, err
 }
 
-func (r *repository) UpdateCharity(fund models.Charity, ID int) (models.Charity, error) {
-	err := r.db.Save(&fund).Error
-	return fund, err
+func (r *repository) UpdateCharity(charity models.Charity, ID int) (models.Charity, error) {
+	err := r.db.Save(&charity).Error
+	return charity, err
 }
 
-func (r *repository) DeleteCharity(ID int, fund models.Charity) (models.Charity, error) {
-	err := r.db.Exec("SET FOREIGN_KEY_CHECKS=0;").Raw("DELETE FROM charities WHERE id=?", ID).Scan(&fund).Error
+func (r *repository) DeleteCharity(ID int, charity models.Charity) (models.Charity, error) {
+	err := r.db.Exec("SET FOREIGN_KEY_CHECKS=0;").Raw("DELETE FROM charities WHERE id=?", ID).Scan(&charity).Error
 
-	return fund, err
+	return charity, err
 }

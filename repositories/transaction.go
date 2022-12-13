@@ -50,7 +50,7 @@ func (r *repository) GetTransactionPendingByCharity(ID int) ([]models.Transactio
 func (r *repository) GetTransactionByUser(ID int) ([]models.Transaction, error) {
 	var transaction []models.Transaction
 	// not yet using category relation, cause this step doesnt Belong to Many
-	err := r.db.Where("funder_id=?", ID).Preload("Charity.User").Find(&transaction).Error
+	err := r.db.Where("funder_id=?", ID).Preload("Charity").Find(&transaction).Error
 
 	return transaction, err
 }
