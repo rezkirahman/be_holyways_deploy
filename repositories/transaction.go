@@ -63,7 +63,7 @@ func (r *repository) DeleteTransaction(ID int, transaction models.Transaction) (
 // Create UpdateTransaction method here ...
 func (r *repository) UpdateTransaction(status string, ID string) (error) {
 	var transaction models.Transaction
-	r.db.Preload("User").Preload("Charity").First(&transaction, ID)
+	r.db.Preload("Charity").First(&transaction, ID)
 
 
 	//update total donation on 
